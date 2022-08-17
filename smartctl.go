@@ -388,6 +388,9 @@ func (smart *SMARTctl) mineSmartStatus() {
 func (smart *SMARTctl) mineDeviceStatistics() {
 	for _, page := range smart.json.Get("ata_device_statistics.pages").Array() {
 		table := strings.TrimSpace(page.Get("name").String())
+		if table == "Vendor Specific Statistics" {
+			continue
+		}
 		for _, statistic := range page.Get("table").Array() {
 			smart.ch <- prometheus.MustNewConstMetric(
 				metricDeviceStatistics,
