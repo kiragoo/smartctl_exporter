@@ -164,6 +164,17 @@ var (
 		},
 		nil,
 	)
+	metricDeviceNvmePowerCycleCount = prometheus.NewDesc(
+		"smartctl_device_nvme_power_cycle_count",
+		"Device power cycle count",
+		[]string{
+			"device",
+			"model_family",
+			"model_name",
+			"serial_number",
+		},
+		nil,
+	)
 	metricDevicePercentageUsed = prometheus.NewDesc(
 		"smartctl_device_percentage_used",
 		"Device write percentage used",

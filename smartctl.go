@@ -471,7 +471,7 @@ func (smart *SMARTctl) mineNvmeSmartHealthInformationLog() {
 		smart.device.serial,
 	)
 	smart.ch <- prometheus.MustNewConstMetric(
-		metricDevicePowerCycleCount,
+		metricDeviceNvmePowerCycleCount,
 		prometheus.CounterValue,
 		iHealth.Get("power_cycles").Float(),
 		smart.device.device,
