@@ -39,6 +39,11 @@ func (i SMARTctlManagerCollector) Describe(ch chan<- *prometheus.Desc) {
 // Collect is called by the Prometheus registry when collecting metrics.
 func (i SMARTctlManagerCollector) Collect(ch chan<- prometheus.Metric) {
 	info := NewSMARTctlInfo(ch)
+	// Dynamic get devices periodically while the devices are not specified in the config file
+	if len(options.SMARTctl.Devices) == 0 {
+		getDeviceDynamically()
+	}
+
 	for _, device := range options.SMARTctl.Devices {
 		if json, err := readData(device); err == nil {
 			info.SetJSON(json)
@@ -51,19 +56,20 @@ func (i SMARTctlManagerCollector) Collect(ch chan<- prometheus.Metric) {
 	info.Collect()
 }
 
+// While the devices are not specified in the config file, we will get them dynamically
+func getDeviceDynamically() {
+	logger.Debug("No devices specified, trying to load them automatically")
+	json := readSMARTctlDevices()
+	devices := json.Get("devices").Array()
+	for _, d := range devices {
+		device := d.Get("name").String()
+		logger.Debug("Found device: %s", device)
+		options.SMARTctl.Devices = append(options.SMARTctl.Devices, device)
+	}
+}
+
 func init() {
 	options = loadOptions()
-
-	if len(options.SMARTctl.Devices) == 0 {
-		logger.Debug("No devices specified, trying to load them automatically")
-		json := readSMARTctlDevices()
-		devices := json.Get("devices").Array()
-		for _, d := range devices {
-			device := d.Get("name").String()
-			logger.Debug("Found device: %s", device)
-			options.SMARTctl.Devices = append(options.SMARTctl.Devices, device)
-		}
-	}
 }
 
 func main() {
