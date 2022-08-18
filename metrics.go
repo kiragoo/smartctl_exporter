@@ -119,6 +119,17 @@ var (
 		},
 		nil,
 	)
+	metricDeviceNvmePowerOnSeconds = prometheus.NewDesc(
+		"smartctl_device_nvme_power_on_seconds",
+		"Device power on seconds",
+		[]string{
+			"device",
+			"model_family",
+			"model_name",
+			"serial_number",
+		},
+		nil,
+	)
 	metricDeviceRotationRate = prometheus.NewDesc(
 		"smartctl_device_rotation_rate",
 		"Device rotation rate",

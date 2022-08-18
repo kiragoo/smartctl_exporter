@@ -482,7 +482,7 @@ func (smart *SMARTctl) mineNvmeSmartHealthInformationLog() {
 
 	pot := iHealth.Get("power_on_hours")
 	smart.ch <- prometheus.MustNewConstMetric(
-		metricDevicePowerOnSeconds,
+		metricDeviceNvmePowerOnSeconds,
 		prometheus.CounterValue,
 		GetFloatIfExists(pot, "hours", 0)*60*60+GetFloatIfExists(pot, "minutes", 0)*60,
 		smart.device.device,
