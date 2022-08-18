@@ -108,8 +108,8 @@ var (
 		},
 		nil,
 	)
-	metricDevicePowerOnSeconds = prometheus.NewDesc(
-		"smartctl_device_power_on_seconds",
+	metricDevicePowerOnSecondsCount = prometheus.NewDesc(
+		"smartctl_device_power_on_seconds_count",
 		"Device power on seconds",
 		[]string{
 			"device",
@@ -119,8 +119,8 @@ var (
 		},
 		nil,
 	)
-	metricDeviceNvmePowerOnSeconds = prometheus.NewDesc(
-		"smartctl_device_nvme_power_on_seconds",
+	metricDevicePowerOnSecondsGauge = prometheus.NewDesc(
+		"smartctl_device_power_on_seconds_gauge",
 		"Device power on seconds",
 		[]string{
 			"device",
@@ -153,8 +153,8 @@ var (
 		},
 		nil,
 	)
-	metricDevicePowerCycleCount = prometheus.NewDesc(
-		"smartctl_device_power_cycle_count",
+	metricDevicePowerCycleCountCount = prometheus.NewDesc(
+		"smartctl_device_power_cycle_count_count",
 		"Device power cycle count",
 		[]string{
 			"device",
@@ -164,8 +164,8 @@ var (
 		},
 		nil,
 	)
-	metricDeviceNvmePowerCycleCount = prometheus.NewDesc(
-		"smartctl_device_nvme_power_cycle_count",
+	metricDevicePowerCycleCountGauge = prometheus.NewDesc(
+		"smartctl_device_power_cycle_count_gauge",
 		"Device power cycle count",
 		[]string{
 			"device",

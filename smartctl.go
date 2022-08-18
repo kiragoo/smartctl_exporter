@@ -58,10 +58,12 @@ func (smart *SMARTctl) Collect() {
 	smart.mineCapacity()
 	smart.mineInterfaceSpeed()
 	smart.mineDeviceAttribute()
-	smart.minePowerOnSeconds()
+	smart.minePowerOnSecondsCount()
+	smart.minePowerOnSecondsGauge()
 	smart.mineRotationRate()
 	smart.mineTemperatures()
-	smart.minePowerCycleCount()
+	smart.minePowerCycleCountCount()
+	smart.minePowerCycleCountGauge()
 	smart.mineDeviceSCTStatus()
 	smart.mineDeviceStatistics()
 	smart.mineNvmeSmartHealthInformationLog()
@@ -201,11 +203,24 @@ func (smart *SMARTctl) mineDeviceAttribute() {
 	}
 }
 
-func (smart *SMARTctl) minePowerOnSeconds() {
+func (smart *SMARTctl) minePowerOnSecondsCount() {
 	pot := smart.json.Get("power_on_time")
 	smart.ch <- prometheus.MustNewConstMetric(
-		metricDevicePowerOnSeconds,
+		metricDevicePowerOnSecondsCount,
 		prometheus.CounterValue,
+		GetFloatIfExists(pot, "hours", 0)*60*60+GetFloatIfExists(pot, "minutes", 0)*60,
+		smart.device.device,
+		smart.device.family,
+		smart.device.model,
+		smart.device.serial,
+	)
+}
+
+func (smart *SMARTctl) minePowerOnSecondsGauge() {
+	pot := smart.json.Get("power_on_time")
+	smart.ch <- prometheus.MustNewConstMetric(
+		metricDevicePowerOnSecondsGauge,
+		prometheus.GaugeValue,
 		GetFloatIfExists(pot, "hours", 0)*60*60+GetFloatIfExists(pot, "minutes", 0)*60,
 		smart.device.device,
 		smart.device.family,
@@ -248,10 +263,22 @@ func (smart *SMARTctl) mineTemperatures() {
 	}
 }
 
-func (smart *SMARTctl) minePowerCycleCount() {
+func (smart *SMARTctl) minePowerCycleCountCount() {
 	smart.ch <- prometheus.MustNewConstMetric(
-		metricDevicePowerCycleCount,
+		metricDevicePowerCycleCountCount,
 		prometheus.CounterValue,
+		smart.json.Get("power_cycle_count").Float(),
+		smart.device.device,
+		smart.device.family,
+		smart.device.model,
+		smart.device.serial,
+	)
+}
+
+func (smart *SMARTctl) minePowerCycleCountGauge() {
+	smart.ch <- prometheus.MustNewConstMetric(
+		metricDevicePowerCycleCountGauge,
+		prometheus.GaugeValue,
 		smart.json.Get("power_cycle_count").Float(),
 		smart.device.device,
 		smart.device.family,
@@ -465,26 +492,6 @@ func (smart *SMARTctl) mineNvmeSmartHealthInformationLog() {
 		metricMediaErrors,
 		prometheus.GaugeValue,
 		iHealth.Get("media_errors").Float(),
-		smart.device.device,
-		smart.device.family,
-		smart.device.model,
-		smart.device.serial,
-	)
-	smart.ch <- prometheus.MustNewConstMetric(
-		metricDeviceNvmePowerCycleCount,
-		prometheus.CounterValue,
-		iHealth.Get("power_cycles").Float(),
-		smart.device.device,
-		smart.device.family,
-		smart.device.model,
-		smart.device.serial,
-	)
-
-	pot := iHealth.Get("power_on_hours")
-	smart.ch <- prometheus.MustNewConstMetric(
-		metricDeviceNvmePowerOnSeconds,
-		prometheus.CounterValue,
-		GetFloatIfExists(pot, "hours", 0)*60*60+GetFloatIfExists(pot, "minutes", 0)*60,
 		smart.device.device,
 		smart.device.family,
 		smart.device.model,
